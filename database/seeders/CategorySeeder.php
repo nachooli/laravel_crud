@@ -1,0 +1,18 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Category;
+use Illuminate\Database\Seeder;
+
+/**
+ * Seeder para Category
+ */
+class CategorySeeder extends Seeder
+{
+    public function run(): void
+    {
+        Category::factory(3)->invisible()->create();
+        Category::factory(3)->create();
+    }
+}
