@@ -6,16 +6,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Modelo de User
+ * Model para Coment
  */
-class User extends Model
+class Comment extends Model
 {
     use HasFactory;
 
     public $timestamps = false;
 
     protected $fillable = [
-        'username',
-        'full_name',
+        'post_id',
+        'user_id',
+        'content',
+        'datetime',
+    ];
+
+    protected $casts = [
+        'datetime' => 'datetime',
     ];
 }
