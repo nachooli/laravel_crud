@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Modelo para Category
@@ -24,6 +25,16 @@ class Category extends Model
     protected $casts = [
         'visible' => 'boolean',
     ];
+
+    /**
+     * Relación con Posts
+     *
+     * @return BelongsToMany
+     */
+    public function posts(): BelongsToMany
+    {
+        return $this->belongsToMany(Post::class);
+    }
 
     /**
      * En el caso de que se quiera acceder a las categorías visibles se puede crear un scope,
