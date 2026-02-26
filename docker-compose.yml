@@ -23,7 +23,7 @@ services:
     image: mariadb:10.3
     container_name: laravel_crud_db
     environment:
-      MYSQL_DATABASE: laravel
+      MYSQL_DATABASE: laravel_crud
       MYSQL_ROOT_PASSWORD: root
     ports:
       - "3306:3306"
