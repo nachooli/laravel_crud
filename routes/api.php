@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\PostRecordsController;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -11,5 +12,12 @@ Route::prefix('v1')
     ->middleware('api')
     ->name('api.v1.')
     ->group(function () {
+        // Rutas para el CRUD de Category
         Route::apiResource('categories', CategoryController::class);
+
+        // Ruta para los registros de los posts
+        Route::get(
+            'posts/{post}/records',
+            [PostRecordsController::class, 'show']
+        )->name('posts.records');
     });
