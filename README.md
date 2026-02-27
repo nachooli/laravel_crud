@@ -87,7 +87,7 @@ Relaciones:
 ## Rutas
 - /api/v1/categories
 - /api/v1/posts
-- /api/v1/posts/{post}/activity
+- /api/v1/posts/{post}/records
 
 (Se ha versionado la API por seguir buenas prácticas, aunque en realidad no sería estrictamente necesario)
 
