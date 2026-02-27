@@ -1,59 +1,132 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Laravel CRUD API
 
-## About Laravel
+Este proyecto implementa una API REST basada en Laravel para la gestión de un sistema de publicaciones (posts),
+categorías, usuarios y comentarios, a partir de un esquema de base de datos en un archivo SQL.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Buenas prácticas en:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Validación
+- Estructura de rutas
+- Serialización de respuestas
+- Testing
+- Dockerización
+- Separación de responsabilidades
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+De esta manera se demuestra dominio de laravel a nivel arquitectónico y un uso corrrecto de patrones de diseño.
 
-## Learning Laravel
+--------------------
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+# Instalación (Docker)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+El proyecto está preparado para ejecutarse usando Docker.
 
-## Laravel Sponsors
+- _make setup_
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Esto ejecuta automáticamente todo lo necesario para arrancar el proyecto.
+Si no se quiere hacer uso del 'Makefile', en este mismo archivo en la
+carpeta raíz del proyecto, están todos los comandos de docker para ejecutarlos manualmente
+si así se prefiere.
 
-### Premium Partners
+# Testing
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Para garantizar la estabilidad, he cubierto los flujos principales con tests de integración.
+Puedes ejecutarlos todos con un solo comando:
 
-## Contributing
+- _make test_
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Se incluyen tests de:
 
-## Code of Conduct
+- Modelos
+- Relaciones
+- Endpoints API
+- Reglas de negocio
+- Contratos de Resource
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Al igual que para levantar el proyecto, si no se quiere hacer uso del 'Makefile', se pueden ejecutar manualemente
+los comandos establecidos en este mismo archivo.
 
-## Security Vulnerabilities
+--------------------
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Arquitectura general
 
-## License
+La aplicación está organizada en capas:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```
+Controller ──▶ Action ──▶ Repository ──▶ Model
+                  │
+                  └─────▶ Resource
+```
+
+
+Así se evita que los controllers contengan lógica de negocio directamente.
+
+Se ha optado por un patrón de Actions para mantener los controladores lo más limpios posible (Thin Controllers).
+Esto permite centralizar la lógica de negocio y reutilizarla.
+
+## Base de datos
+
+La estructura se ha construido a partir de un archivo SQL.
+
+Entidades principales:
+
+- users
+- posts
+- categories
+- comments
+- category_post (tabla pivote)
+
+Relaciones:
+
+- User → hasMany → Post
+- Post → belongsTo → User
+- Post → belongsToMany → Category
+- Post → hasMany → Comment
+- Comment → belongsTo → User
+
+## Rutas
+- /api/v1/categories
+- /api/v1/posts
+- /api/v1/posts/{post}/activity
+
+(Se ha versionado la API por seguir buenas prácticas, aunque en realidad no sería estrictamente necesario)
+
+## Controladores
+
+Los controladores no contienen lógica de negocio, solo:
+
+- Reciben Request
+- Llaman a Actions
+- Devuelven Resources
+
+Todos extienden del Controller base, donde se estandariza la respuesta de cada función del CRUD.
+De esta manera se facilita el mantenimiento, permite mockear Actions en tests y se mejora la legibilidad.
+
+
+## Actions
+
+Las Actions encapsulan un caso de uso concreto.
+
+De esta manera hay una semántica clara, se quita peso a los Controller, se siguen principios SOLID y facilita la reutilización.
+
+## Repositories
+
+Se ha implementado el patrón Repository para abstraer Eloquent.
+Aunque para un proyecto pequeño puede parecer redundante,
+se ha incluido para demostrar cómo desacoplar la persistencia y facilitar el mockeo en los tests unitarios.
+
+## Requests (Form Requests)
+
+Se usan únicamente cuando hay datos de entrada, permiten:
+
+- Validación centralizada
+- Evitar lógica en controllers
+- Mejorar seguridad
+
+## Resources
+
+Todas las respuestas pasan por Resources, de esta manera se consigue:
+
+- Control total del contrato JSON
+- Evita exponer estructura interna
+- Permite versionado de respuesta
